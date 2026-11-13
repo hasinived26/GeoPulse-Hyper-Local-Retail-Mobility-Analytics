@@ -28,17 +28,19 @@ for file in files:
     )
 
     df["DeviceID"] = "000"
+    df["TrajectoryID"] = file.stem
+    
     df["Timestamp"] = pd.to_datetime(
-        df["Date"] + " " + df["Time"]
-    )
-
+    df["Date"] + " " + df["Time"])
+    
     records.append(
         df[[
-            "DeviceID",
-            "Latitude",
-            "Longitude",
-            "Altitude",
-            "Timestamp"
+        "DeviceID",
+        "TrajectoryID",
+        "Latitude",
+        "Longitude",
+        "Altitude",
+        "Timestamp"
         ]]
     )
 
