@@ -48,3 +48,40 @@ print((df["Altitude"] > 3000).sum())
 
 print("\nAltitude Statistics:")
 print(df["Altitude"].describe())
+
+
+# Investigate unusual altitude records
+
+print("\nLOWEST ALTITUDE RECORDS")
+print(
+    df.nsmallest(10, "Altitude")[
+        ["TrajectoryID", "Latitude", "Longitude", "Altitude", "Timestamp"]
+    ]
+)
+
+print("\nHIGHEST ALTITUDE RECORDS")
+print(
+    df.nlargest(10, "Altitude")[
+        ["TrajectoryID", "Latitude", "Longitude", "Altitude", "Timestamp"]
+    ]
+)
+
+print("\nUNUSUAL ALTITUDE COUNT BY TRAJECTORY")
+
+unusual = df[
+    (df["Altitude"] < 0) | (df["Altitude"] > 3000)
+]
+
+print(unusual.groupby("TrajectoryID").size())
+
+
+print("\nALTITUDE ANOMALIES BY TRAJECTORY")
+
+df["Negative_Altitude"] = df["Altitude"] < 0
+df["High_Altitude"] = df["Altitude"] > 3000
+
+print(
+    df.groupby("TrajectoryID")[
+        ["Negative_Altitude", "High_Altitude"]
+    ].sum()
+)

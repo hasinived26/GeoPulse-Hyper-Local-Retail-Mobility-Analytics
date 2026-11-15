@@ -62,3 +62,21 @@ patterns and support the development of GeoPulse.
 - No missing or duplicate records were found.
 - Some altitude values require further investigation.
 - No records have been removed or modified.
+
+
+### Altitude Anomaly Investigation
+
+Unusual altitude records were identified across all three trajectories.
+
+| Trajectory | Negative Altitude | High Altitude |
+|---|---:|---:|
+| 20081023025304 | 11 | 25 |
+| 20081024020959 | 16 | 0 |
+| 20081026134407 | 18 | 0 |
+
+Observations:
+- 45 records have negative altitude.
+- 25 records have altitude above 3000 feet.
+- All high-altitude records belong to the first trajectory.
+- No records have been deleted or modified.
+- Further investigation is required before handling these values.
