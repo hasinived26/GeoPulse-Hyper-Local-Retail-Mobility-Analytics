@@ -85,3 +85,41 @@ print(
         ["Negative_Altitude", "High_Altitude"]
     ].sum()
 )
+
+
+# Timestamp Interval Analysis
+
+print("\nTIMESTAMP INTERVAL ANALYSIS")
+
+# Sort records by trajectory and timestamp
+df = df.sort_values(
+    ["TrajectoryID", "Timestamp"]
+).copy()
+
+# Calculate time difference between consecutive GPS points
+df["Time_Difference"] = (
+    df.groupby("TrajectoryID")["Timestamp"]
+    .diff()
+    .dt.total_seconds()
+)
+
+print("\nTime Difference Statistics (seconds):")
+print(df["Time_Difference"].describe())
+
+print("\nAverage Time Difference by Trajectory:")
+print(
+    df.groupby("TrajectoryID")["Time_Difference"].mean()
+)
+
+print("\nTime Gaps Greater Than 1 Minute:")
+print((df["Time_Difference"] > 60).sum())
+
+print("\nTime Gaps Greater Than 5 Minutes:")
+print((df["Time_Difference"] > 300).sum())
+
+print("\nLargest Time Gaps:")
+print(
+    df.nlargest(5, "Time_Difference")[
+        ["TrajectoryID", "Timestamp", "Time_Difference"]
+    ]
+)
