@@ -80,3 +80,27 @@ Observations:
 - All high-altitude records belong to the first trajectory.
 - No records have been deleted or modified.
 - Further investigation is required before handling these values.
+
+
+## Movement Analysis
+
+- Calculated distance between consecutive GPS points.
+- Calculated time differences between GPS records.
+- Calculated movement speed in km/h.
+- Average speed: 8.47 km/h.
+- Maximum speed: 218.10 km/h.
+
+### Speed Distribution
+
+- Stationary: 60 records
+- Walking: 1,096 records
+- Moderate movement: 622 records
+- Fast movement: 61 records
+- Unusually high speed: 55 records
+
+### Observations
+
+- Identified unusually high GPS speeds.
+- Observed sudden coordinate jumps.
+- High-speed records require further investigation.
+- Original GPS data remains unchanged.

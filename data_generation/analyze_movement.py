@@ -71,3 +71,93 @@ print(df["Speed_kmh"].mean())
 
 print("\nMaximum Speed:")
 print(df["Speed_kmh"].max())
+
+
+# HIGH SPEED ANOMALY ANALYSIS
+
+print("\nHIGH SPEED ANOMALIES")
+
+high_speed = df[df["Speed_kmh"] > 50].copy()
+
+print("Records above 50 km/h:", len(high_speed))
+
+print("\nHighest Speed Records:")
+
+print(
+    high_speed[
+        [
+            "TrajectoryID",
+            "Latitude",
+            "Longitude",
+            "Timestamp",
+            "Distance_km",
+            "Time_Difference",
+            "Speed_kmh"
+        ]
+    ].sort_values(
+        by="Speed_kmh",
+        ascending=False
+    ).head(10)
+)
+
+
+# INSPECT PREVIOUS GPS POINTS
+
+df["Previous_Latitude"] = (
+    df.groupby("TrajectoryID")["Latitude"].shift(1)
+)
+
+df["Previous_Longitude"] = (
+    df.groupby("TrajectoryID")["Longitude"].shift(1)
+)
+
+print("\nGPS JUMP INSPECTION")
+
+print(
+    high_speed[
+        ["TrajectoryID", "Latitude", "Longitude",
+         "Speed_kmh"]
+    ].merge(
+        df[["TrajectoryID", "Latitude", "Longitude",
+            "Previous_Latitude", "Previous_Longitude"]],
+        on=["TrajectoryID", "Latitude", "Longitude"]
+    ).head(10)
+)
+
+# INSPECT GPS POINTS AROUND BIGGEST ANOMALY
+
+print("\nGPS POINTS AROUND BIGGEST ANOMALY")
+
+print(
+    df.loc[147:153, [
+        "TrajectoryID",
+        "Latitude",
+        "Longitude",
+        "Timestamp",
+        "Distance_km",
+        "Time_Difference",
+        "Speed_kmh"
+    ]]
+)
+
+# SPEED CATEGORY ANALYSIS
+
+print("\nSPEED CATEGORY ANALYSIS")
+
+print("Stationary (0 km/h):",
+      (df["Speed_kmh"] == 0).sum())
+
+print("Walking (0-6 km/h):",
+      ((df["Speed_kmh"] > 0) &
+       (df["Speed_kmh"] <= 6)).sum())
+
+print("Moderate movement (6-20 km/h):",
+      ((df["Speed_kmh"] > 6) &
+       (df["Speed_kmh"] <= 20)).sum())
+
+print("Fast movement (20-50 km/h):",
+      ((df["Speed_kmh"] > 20) &
+       (df["Speed_kmh"] <= 50)).sum())
+
+print("Unusually high speed (>50 km/h):",
+      (df["Speed_kmh"] > 50).sum())
