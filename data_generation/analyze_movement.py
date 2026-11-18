@@ -161,3 +161,36 @@ print("Fast movement (20-50 km/h):",
 
 print("Unusually high speed (>50 km/h):",
       (df["Speed_kmh"] > 50).sum())
+
+
+# GPS OUTLIER INVESTIGATION
+
+df["Next_Distance_km"] = (
+    df.groupby("TrajectoryID")["Distance_km"].shift(-1)
+)
+
+outliers = df[df["Speed_kmh"] > 50].copy()
+
+print("\nGPS OUTLIER INVESTIGATION")
+
+print("Total suspicious records:", len(outliers))
+
+print("\nTop 10 suspicious records:")
+
+print(
+    outliers[
+        [
+            "TrajectoryID",
+            "Timestamp",
+            "Latitude",
+            "Longitude",
+            "Distance_km",
+            "Time_Difference",
+            "Speed_kmh",
+            "Next_Distance_km"
+        ]
+    ].sort_values(
+        by="Speed_kmh",
+        ascending=False
+    ).head(10)
+)
