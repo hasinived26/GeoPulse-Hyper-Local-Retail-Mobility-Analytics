@@ -1,0 +1,5 @@
+pandas
+numpy
+matplotlib
+snowflake-connector-python
+python-dotenv

@@ -1,6 +1,7 @@
 # Raw datasets
 data/raw/*
 !data/raw/.gitkeep
+data/processed/*
 
 # Python
 __pycache__/
