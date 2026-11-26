@@ -4,7 +4,7 @@ import argparse
 from pathlib import Path
 import pandas as pd
 
-RAW_DIR = Path("data/raw/Geolife Trajectories 1.3/Data")
+RAW_DIR = Path("data/raw/Geolife Trajectories 1.3/Geolife Trajectories 1.3/Data")
 OUT_DIR = Path("data/processed")
 
 COLS = ["lat", "lon", "zero", "alt_ft", "days", "date", "time"]
@@ -35,8 +35,8 @@ def clean(df: pd.DataFrame, tz_offset_hours: float) -> pd.DataFrame:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--users", type=int, default=20, help="how many users to process")
-    ap.add_argument("--tz-offset", type=float, default=0,
-                    help="hours to add to raw timestamps (try 0 first, then 8)")
+    ap.add_argument("--tz-offset", type=float, default=8,
+                    help="hours to add to GMT timestamps (Beijing = +8)")
     args = ap.parse_args()
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
