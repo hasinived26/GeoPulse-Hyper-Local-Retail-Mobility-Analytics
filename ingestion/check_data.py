@@ -1,5 +1,6 @@
 """Print basic facts and draw a scatter plot."""
 import matplotlib.pyplot as plt
+from pathlib import Path
 from common import load_processed
 
 df = load_processed()
@@ -17,5 +18,7 @@ plt.scatter(sample["lon"], sample["lat"], s=1)
 plt.xlabel("longitude")
 plt.ylabel("latitude")
 plt.title("50,000 random dots")
-plt.savefig("docs/scatter.png", dpi=120)
+output = Path("docs/scatter.png")
+output.parent.mkdir(parents=True, exist_ok=True)
+plt.savefig(output, dpi=120)
 print("\nSaved docs/scatter.png")

@@ -6,14 +6,19 @@ import pandas as pd
 PROCESSED_DIR = Path("data/processed")
 
 def load_processed() -> pd.DataFrame:
-
     files = sorted(PROCESSED_DIR.glob("*.csv.gz"))
     if not files:
         raise SystemExit("No files in data/processed. Run clean_and_export.py first.")
-    return pd.concat(
-        (pd.read_csv(f, dtype={"device_id": str}, parse_dates=["ts_local"]) for f in files),
-        ignore_index=True,
-    )
+
+    frames = []
+    for file in files:
+        frame = pd.read_csv(file, dtype={"device_id": str}, parse_dates=["ts_local"])
+        if not frame.empty:
+            frames.append(frame)
+
+    if not frames:
+        raise SystemExit("No rows in data/processed. Run clean_and_export.py first.")
+    return pd.concat(frames, ignore_index=True)
 
 
 def haversine_m(lat1, lon1, lat2, lon2):
