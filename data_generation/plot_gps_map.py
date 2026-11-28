@@ -6,14 +6,19 @@ from pathlib import Path
 # Load cleaned GPS dataset
 df = pd.read_csv("data/processed/gps_cleaned.csv")
 
-# Remove records with invalid coordinates
+# Convert anomaly column to boolean
+df["Is_Anomaly"] = (
+    df["Is_Anomaly"].astype(str).str.lower() == "true"
+)
+
+# Remove records with missing coordinates
 df = df.dropna(subset=["Latitude", "Longitude"])
 
 # Calculate map center
 center_lat = df["Latitude"].mean()
 center_lon = df["Longitude"].mean()
 
-# Create interactive map
+# Create map using Esri tiles
 gps_map = folium.Map(
     location=[center_lat, center_lon],
     zoom_start=13,
@@ -21,20 +26,26 @@ gps_map = folium.Map(
     attr="Tiles © Esri"
 )
 
-# Different colors for different trajectories
-colors = ["blue", "red", "green"]
+# Colors for each trajectory
+colors = ["blue", "green", "purple"]
 
 # Plot each trajectory separately
 for i, (trajectory_id, group) in enumerate(
     df.groupby("TrajectoryID")
 ):
+
     color = colors[i % len(colors)]
 
-    feature_group = folium.FeatureGroup(
-        name=f"Trajectory {i+1}"
+    # Separate normal and suspicious records
+    normal_points = group[group["Is_Anomaly"] == False]
+    suspicious_points = group[group["Is_Anomaly"] == True]
+
+    # Normal GPS points layer
+    normal_layer = folium.FeatureGroup(
+        name=f"Trajectory {i+1} - Normal"
     )
 
-    for _, row in group.iterrows():
+    for _, row in normal_points.iterrows():
 
         folium.CircleMarker(
             location=[
@@ -44,22 +55,49 @@ for i, (trajectory_id, group) in enumerate(
             radius=3,
             color=color,
             fill=True,
-            fill_opacity=0.6,
+            fill_color=color,
+            fill_opacity=0.7,
             popup=f"""
+            Type: Normal<br>
             Trajectory: {trajectory_id}<br>
-            Latitude: {row['Latitude']}<br>
-            Longitude: {row['Longitude']}
+            Speed: {row['Speed_kmh']:.2f} km/h
             """
-        ).add_to(feature_group)
+        ).add_to(normal_layer)
 
-    feature_group.add_to(gps_map)
+    normal_layer.add_to(gps_map)
+
+    # Suspicious GPS points layer
+    suspicious_layer = folium.FeatureGroup(
+        name=f"Trajectory {i+1} - Suspicious"
+    )
+
+    for _, row in suspicious_points.iterrows():
+
+        folium.CircleMarker(
+            location=[
+                row["Latitude"],
+                row["Longitude"]
+            ],
+            radius=6,
+            color="red",
+            fill=True,
+            fill_color="red",
+            fill_opacity=1,
+            popup=f"""
+            Type: Suspicious<br>
+            Trajectory: {trajectory_id}<br>
+            Speed: {row['Speed_kmh']:.2f} km/h
+            """
+        ).add_to(suspicious_layer)
+
+    suspicious_layer.add_to(gps_map)
 
 # Add layer control
-folium.LayerControl().add_to(gps_map)
+folium.LayerControl(collapsed=False).add_to(gps_map)
 
-# Save interactive map
+# Save map
 output_path = Path(
-    "data/processed/visualizations/gps_trajectory_map.html"
+    "data/processed/visualizations/gps_anomaly_map.html"
 )
 
 output_path.parent.mkdir(
@@ -69,7 +107,8 @@ output_path.parent.mkdir(
 
 gps_map.save(str(output_path))
 
-print("GPS map created successfully!")
+print("GPS anomaly map created successfully!")
 print("Total GPS points:", len(df))
-print("Total trajectories:", df["TrajectoryID"].nunique())
+print("Normal points:", (~df["Is_Anomaly"]).sum())
+print("Suspicious points:", df["Is_Anomaly"].sum())
 print("Saved to:", output_path)
